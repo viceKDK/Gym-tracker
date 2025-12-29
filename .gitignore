@@ -1,0 +1,6 @@
+# B-MAD
+_bmad/
+
+# AI Agents
+.claude/
+.gemini/
