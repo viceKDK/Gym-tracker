@@ -90,24 +90,71 @@ export class StatsRepository extends BaseRepository {
     );
   }
 
-  /**
-   * Get the personal record for an exercise (max weight)
-   */
-  async getPRForExercise(exerciseId: number): Promise<{ max_weight: number; achieved_at: string } | null> {
-    return await this.getFirstAsync<{ max_weight: number; achieved_at: string }>(
-      `SELECT weight as max_weight, created_at as achieved_at 
-       FROM workout_sets 
-       WHERE exercise_id = ? 
-       ORDER BY weight DESC, created_at DESC 
-       LIMIT 1`,
-      [exerciseId]
-    );
-  }
-
-  /**
-   * Helper to map exercise count to intensity level (0-4)
-   */
-  private calculateActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {
+    /**
+     * Get the personal record for an exercise (max weight)
+     */
+    async getPRForExercise(exerciseId: number): Promise<{ max_weight: number; achieved_at: string } | null> {
+      return await this.getFirstAsync<{ max_weight: number; achieved_at: string }>(
+        `SELECT weight as max_weight, created_at as achieved_at
+         FROM workout_sets
+         WHERE exercise_id = ?
+         ORDER BY weight DESC, created_at DESC
+         LIMIT 1`,
+        [exerciseId]
+      );
+    }
+  
+    /**
+     * Get total workout volume per week for the last 4 weeks
+     */
+    async getWeeklyVolumeComparison(): Promise<{ week_start: string; total_volume: number }[]> {
+      // Volume = weight * reps
+      return await this.getAllAsync<{ week_start: string; total_volume: number }>(
+        `SELECT date(ws.date, 'weekday 1', '-7 days') as week_start,
+                SUM(wst.weight * wst.reps) as total_volume
+         FROM workout_sessions ws
+         JOIN workout_sets wst ON ws.id = wst.session_id
+         WHERE ws.date >= date('now', '-28 days')
+         AND ws.completed_at IS NOT NULL
+         GROUP BY week_start
+         ORDER BY week_start ASC`
+      );
+    }
+  
+    /**
+     * Get distribution of sets by exercise category
+     */
+    async getCategoryDistribution(): Promise<{ category: string; set_count: number }[]> {
+      return await this.getAllAsync<{ category: string; set_count: number }>(
+        `SELECT e.category, COUNT(*) as set_count
+         FROM workout_sets wst
+         JOIN exercises e ON wst.exercise_id = e.id
+         JOIN workout_sessions ws ON wst.session_id = ws.id
+         WHERE ws.completed_at IS NOT NULL
+         GROUP BY e.category`
+      );
+    }
+  
+    /**
+     * Get monthly summary for the current year
+     */
+    async getMonthlyAnalyticsSummary(): Promise<{ month: string; workout_count: number; total_sets: number }[]> {
+      return await this.getAllAsync<{ month: string; workout_count: number; total_sets: number }>(
+        `SELECT strftime('%Y-%m', ws.date) as month,
+                COUNT(DISTINCT ws.id) as workout_count,
+                COUNT(wst.id) as total_sets
+         FROM workout_sessions ws
+         LEFT JOIN workout_sets wst ON ws.id = wst.session_id
+         WHERE ws.date >= strftime('%Y-01-01', 'now')
+         AND ws.completed_at IS NOT NULL
+         GROUP BY month
+         ORDER BY month ASC`
+      );
+    }
+  
+    /**
+     * Helper to map exercise count to intensity level (0-4)
+     */  private calculateActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {
     if (count === 0) return 0;
     if (count <= 2) return 1;
     if (count <= 4) return 2;

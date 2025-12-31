@@ -7,3 +7,4 @@ export * from './useActivityData';
 export * from './useStreak';
 export * from './useProgressExercises';
 export * from './useExerciseProgress';
+export * from './useAnalyticsData';

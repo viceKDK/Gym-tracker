@@ -12,7 +12,8 @@ import {
   WorkoutSuccessScreen,
   WorkoutHistoryScreen,
   WorkoutDetailScreen,
-  ProgressChartScreen
+  ProgressChartScreen,
+  StatisticsScreen
 } from '../screens';
 
 const HomeStack = createNativeStackNavigator();
@@ -62,8 +63,9 @@ export function ExerciseStackNavigator() {
 export function ProgressStackNavigator() {
   return (
     <ProgressStack.Navigator>
-      <ProgressStack.Screen name="ProgressIndex" component={ProgressScreen} options={{ title: 'Progress' }} />
+      <ProgressStack.Screen name="ProgressIndex" component={StatisticsScreen} options={{ title: 'Progress' }} />
       <ProgressStack.Screen name="ProgressChart" component={ProgressChartScreen} options={{ title: 'Progress Chart' }} />
+      <ProgressStack.Screen name="ExerciseSelect" component={ProgressScreen} options={{ title: 'Select Exercise' }} />
     </ProgressStack.Navigator>
   );
 }
