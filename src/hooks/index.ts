@@ -5,3 +5,4 @@ export * from './useWorkoutSession';
 export * from './useDraftRecovery';
 export * from './useActivityData';
 export * from './useStreak';
+export * from './useProgressExercises';

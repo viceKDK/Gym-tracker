@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import { ActivityData } from '../../types';
+import { ActivityData, Exercise } from '../../types';
 import { differenceInDays, parseISO } from 'date-fns';
 
 export class StatsRepository extends BaseRepository {
@@ -60,6 +60,19 @@ export class StatsRepository extends BaseRepository {
     }
 
     return streak;
+  }
+
+  /**
+   * Get all exercises that have at least one workout set logged
+   */
+  async getExercisesWithHistory(): Promise<(Exercise & { last_date: string; last_weight: number })[]> {
+    return await this.getAllAsync<Exercise & { last_date: string; last_weight: number }>(
+      `SELECT e.*, MAX(wst.created_at) as last_date, MAX(wst.weight) as last_weight 
+       FROM exercises e 
+       JOIN workout_sets wst ON e.id = wst.exercise_id 
+       GROUP BY e.id 
+       ORDER BY last_date DESC`
+    );
   }
 
   /**
