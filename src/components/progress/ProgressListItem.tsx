@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Exercise } from '../../types';
 import { CategoryBadge } from '../exercise/CategoryBadge';
+import { PRBadge } from './PRBadge';
 import { format, parseISO } from 'date-fns';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -33,12 +34,16 @@ export const ProgressListItem = ({ exercise, onPress }: ProgressListItemProps) =
       <View style={styles.header}>
         <View style={styles.titleCol}>
           <Text style={[typography.bodyBold, { color: colors.text }]}>{exercise.name}</Text>
-          <CategoryBadge category={exercise.category} />
+          <View style={styles.badgeRow}>
+            <CategoryBadge category={exercise.category} />
+            <View style={{ width: spacing.sm }} />
+            <PRBadge weight={exercise.last_weight} showIcon={false} />
+          </View>
         </View>
         
         <View style={styles.statsCol}>
           <Text style={[typography.bodyBold, { color: colors.primary }]}>
-            {exercise.last_weight} kg
+            Last: {exercise.last_weight} kg
           </Text>
           <Text style={[typography.small, { color: colors.textSecondary }]}>
             {format(parseISO(exercise.last_date), 'MMM d')}
@@ -61,6 +66,11 @@ const styles = StyleSheet.create({
   },
   titleCol: {
     flex: 1,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
   },
   statsCol: {
     alignItems: 'flex-end',

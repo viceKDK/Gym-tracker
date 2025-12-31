@@ -91,6 +91,20 @@ export class StatsRepository extends BaseRepository {
   }
 
   /**
+   * Get the personal record for an exercise (max weight)
+   */
+  async getPRForExercise(exerciseId: number): Promise<{ max_weight: number; achieved_at: string } | null> {
+    return await this.getFirstAsync<{ max_weight: number; achieved_at: string }>(
+      `SELECT weight as max_weight, created_at as achieved_at 
+       FROM workout_sets 
+       WHERE exercise_id = ? 
+       ORDER BY weight DESC, created_at DESC 
+       LIMIT 1`,
+      [exerciseId]
+    );
+  }
+
+  /**
    * Helper to map exercise count to intensity level (0-4)
    */
   private calculateActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {
