@@ -2,6 +2,7 @@ import React from 'react';
 import {
   TouchableOpacity,
   Text,
+  View,
   StyleSheet,
   ActivityIndicator,
   ViewStyle,
@@ -22,6 +23,7 @@ interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   fullWidth?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  leftIcon?: React.ReactNode;
 }
 
 /**
@@ -37,6 +39,7 @@ export function Button({
   fullWidth = false,
   style,
   textStyle,
+  leftIcon,
   ...touchableProps
 }: ButtonProps) {
   const { colors, spacing, borderRadius, typography } = useTheme();
@@ -157,7 +160,11 @@ export function Button({
           color={getTextColor()}
           style={{ marginRight: spacing.sm }}
         />
-      ) : null}
+      ) : (
+        <>
+          {leftIcon && <View style={{ marginRight: spacing.sm }}>{leftIcon}</View>}
+        </>
+      )}
       <Text style={labelStyle}>{title}</Text>
     </TouchableOpacity>
   );

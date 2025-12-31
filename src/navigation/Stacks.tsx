@@ -7,7 +7,8 @@ import {
   ExercisesScreen, 
   ProgressScreen,
   ExerciseFormScreen,
-  DayConfigScreen
+  DayConfigScreen,
+  LogWorkoutScreen
 } from '../screens';
 
 const HomeStack = createNativeStackNavigator();
@@ -28,6 +29,7 @@ export function WorkoutStackNavigator() {
   return (
     <WorkoutStack.Navigator>
       <WorkoutStack.Screen name="WorkoutIndex" component={WorkoutScreen} options={{ title: 'Workout' }} />
+      <WorkoutStack.Screen name="LogWorkout" component={LogWorkoutScreen} options={{ title: 'Log Workout' }} />
     </WorkoutStack.Navigator>
   );
 }
