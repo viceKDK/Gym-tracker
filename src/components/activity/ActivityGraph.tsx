@@ -4,30 +4,39 @@ import Svg, { G } from 'react-native-svg';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ActivityData } from '../../types';
 import { ActivitySquare } from './ActivitySquare';
-import { 
-  subDays, 
-  format, 
-  eachDayOfInterval, 
-  getDay, 
-  startOfWeek, 
+import {
+  subDays,
+  addDays,
+  format,
+  eachDayOfInterval,
+  getDay,
+  startOfWeek,
   isSameDay,
-  parseISO
+  parseISO,
+  isAfter,
+  startOfToday
 } from 'date-fns';
+import { TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface ActivityGraphProps {
   data: ActivityData[];
   days?: number;
+  endDate: Date;
+  onPrev: () => void;
+  onNext: () => void;
+  onToday: () => void;
 }
 
 const SQUARE_SIZE = 12;
 const SQUARE_GAP = 4;
 const WEEK_HEIGHT = (SQUARE_SIZE + SQUARE_GAP) * 7;
 
-export const ActivityGraph = ({ data, days = 365 }: ActivityGraphProps) => {
+export const ActivityGraph = ({ data, days = 365, endDate, onPrev, onNext, onToday }: ActivityGraphProps) => {
   const { colors, spacing, typography } = useTheme();
 
   const gridData = useMemo(() => {
-    const end = new Date();
+    const end = endDate;
     const start = subDays(end, days);
     const interval = eachDayOfInterval({ start, end });
 
@@ -52,16 +61,37 @@ export const ActivityGraph = ({ data, days = 365 }: ActivityGraphProps) => {
         y: dayInWeek * (SQUARE_SIZE + SQUARE_GAP),
       };
     });
-  }, [data, days]);
+  }, [data, days, endDate]);
 
-  const totalWidth = Math.ceil((days + 7) / 7) * (SQUARE_SIZE + SQUARE_GAP);
+  const startDate = subDays(endDate, days);
+  const isAtToday = isSameDay(endDate, startOfToday());
 
   return (
     <View style={[styles.container, { padding: spacing.md }]}>
       <View style={styles.header}>
-        <Text style={[typography.small, { color: colors.textSecondary }]}>Last {days} days</Text>
-      </View>
-      
+        <View style={styles.dateRange}>
+          <Text style={[typography.small, { color: colors.text, fontWeight: 'bold' }]}>
+            {format(startDate, 'MMM yyyy')} - {format(endDate, 'MMM yyyy')}
+          </Text>
+        </View>
+        <View style={styles.controls}>
+          <TouchableOpacity onPress={onPrev} style={styles.controlBtn}>
+            <MaterialIcons name="chevron-left" size={24} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={onNext} 
+            disabled={isAtToday}
+            style={[styles.controlBtn, isAtToday && { opacity: 0.3 }]}
+          >
+            <MaterialIcons name="chevron-right" size={24} color={colors.primary} />
+          </TouchableOpacity>
+          {!isAtToday && (
+            <TouchableOpacity onPress={onToday} style={[styles.todayBtn, { backgroundColor: colors.primary + '20', borderRadius: 4 }]}>
+              <Text style={[typography.small, { color: colors.primary, fontWeight: 'bold' }]}>TODAY</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>      
       <View style={styles.graphWrapper}>
         <Svg width="100%" height={WEEK_HEIGHT}>
           <G>
@@ -103,7 +133,25 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   header: {
-    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  dateRange: {
+    flex: 1,
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  controlBtn: {
+    padding: 4,
+  },
+  todayBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginLeft: 8,
   },
   graphWrapper: {
     flexDirection: 'row',

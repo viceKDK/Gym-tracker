@@ -8,11 +8,12 @@ import { useTodayRoutine } from '../hooks/useTodayRoutine';
 import { useActivityData } from '../hooks/useActivityData';
 import { useStreak } from '../hooks/useStreak';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { addDays, subDays } from 'date-fns';
 
 export default function HomeScreen() {
   const { colors, typography, spacing } = useTheme();
   const { exercises } = useTodayRoutine();
-  const { data: activityData, refresh: refreshActivity } = useActivityData();
+  const { data: activityData, endDate, setEndDate, refresh: refreshActivity } = useActivityData();
   const { streak, refresh: refreshStreak } = useStreak();
   const navigation = useNavigation<any>();
 
@@ -22,6 +23,21 @@ export default function HomeScreen() {
       refreshStreak();
     }, [refreshActivity, refreshStreak])
   );
+
+  const handlePrevPeriod = () => {
+    setEndDate(prev => subDays(prev, 30));
+  };
+
+  const handleNextPeriod = () => {
+    setEndDate(prev => {
+      const next = addDays(prev, 30);
+      return next > new Date() ? new Date() : next;
+    });
+  };
+
+  const handleToday = () => {
+    setEndDate(new Date());
+  };
 
   const handleStartWorkout = () => {
     navigation.navigate('Workout');
@@ -44,7 +60,13 @@ export default function HomeScreen() {
 
         <View style={styles.activitySection}>
           <Text style={[typography.h3, { color: colors.text, marginLeft: spacing.md, marginBottom: spacing.sm }]}>Activity</Text>
-          <ActivityGraph data={activityData} />
+          <ActivityGraph 
+            data={activityData} 
+            endDate={endDate}
+            onPrev={handlePrevPeriod}
+            onNext={handleNextPeriod}
+            onToday={handleToday}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
