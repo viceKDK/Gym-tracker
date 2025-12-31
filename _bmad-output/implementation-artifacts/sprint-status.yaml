@@ -76,7 +76,7 @@ development_status:
   epic-3-retrospective: optional
 
   epic-5: in-progress
-  5-1-create-statsrepository-for-activity-data: ready-for-dev
+  5-1-create-statsrepository-for-activity-data: review
   5-2-render-githubstyle-activity-graph: ready-for-dev
   5-3-display-streak-counter: ready-for-dev
   5-4-navigate-time-periods-on-activity-graph: ready-for-dev
