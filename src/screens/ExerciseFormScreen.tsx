@@ -54,6 +54,33 @@ export default function ExerciseFormScreen() {
     }
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete Exercise',
+      'Are you sure you want to delete this exercise? It will also be removed from your routines.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setIsReady(true);
+              const repo = new ExerciseRepository();
+              await repo.delete(exerciseId!);
+              navigation.goBack();
+            } catch (error) {
+              console.error('[ExerciseForm] Failed to delete:', error);
+              Alert.alert('Error', 'Failed to delete exercise.');
+            } finally {
+              setIsReady(false);
+            }
+          }
+        },
+      ]
+    );
+  };
+
   const renderCategoryOption = (type: ExerciseCategory, label: string) => {
     const isSelected = category === type;
     return (
@@ -115,6 +142,16 @@ export default function ExerciseFormScreen() {
             loading={isSaving}
             style={{ marginBottom: spacing.sm }}
           />
+          {exerciseId && (
+            <Button
+              title="Delete Exercise"
+              onPress={handleDelete}
+              variant="secondary"
+              disabled={isSaving}
+              style={{ marginBottom: spacing.sm, borderColor: colors.error }}
+              // Note: Using secondary variant but with error color for destruction
+            />
+          )}
           <Button
             title="Cancel"
             onPress={() => navigation.goBack()}
