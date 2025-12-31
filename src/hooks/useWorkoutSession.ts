@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WorkoutSession, WorkoutSetWithExercise, NewWorkoutSet } from '../types';
 import { WorkoutRepository } from '../database/repositories/WorkoutRepository';
+import { StatsRepository } from '../database/repositories/StatsRepository';
 import { format } from 'date-fns';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +16,7 @@ export function useWorkoutSession(date: string = format(new Date(), 'yyyy-MM-dd'
   const [sets, setSets] = useState<WorkoutSetWithExercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [lastNewPR, setLastNewPR] = useState<{ exerciseId: number; weight: number } | null>(null);
 
   const loadSession = useCallback(async () => {
     try {
@@ -73,6 +75,18 @@ export function useWorkoutSession(date: string = format(new Date(), 'yyyy-MM-dd'
 
     try {
       const repo = new WorkoutRepository();
+      const statsRepo = new StatsRepository();
+      
+      // Check for new PR before adding
+      if (weight !== null) {
+        const currentPR = await statsRepo.getPRForExercise(exerciseId);
+        if (!currentPR || weight > currentPR.max_weight) {
+          setLastNewPR({ exerciseId, weight });
+          // Clear PR notification after a delay
+          setTimeout(() => setLastNewPR(null), 3000);
+        }
+      }
+
       // Calculate next set number for this exercise
       const exerciseSets = sets.filter(s => s.exercise_id === exerciseId);
       const setNumber = exerciseSets.length + 1;
@@ -114,6 +128,7 @@ export function useWorkoutSession(date: string = format(new Date(), 'yyyy-MM-dd'
     sets,
     loading,
     error,
+    lastNewPR,
     addSet,
     completeSession,
     refresh: loadSession,

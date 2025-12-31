@@ -1,11 +1,11 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View, Text, SafeAreaView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTodayRoutine } from '../hooks/useTodayRoutine';
 import { useWorkoutSession } from '../hooks/useWorkoutSession';
 import { ExerciseCard } from '../components/workout/ExerciseCard';
 import { ExercisePicker } from '../components/workout/ExercisePicker';
-import { Button } from '../components/ui';
+import { Button, CelebrationOverlay } from '../components/ui';
 import { Exercise } from '../types';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -14,9 +14,19 @@ export default function LogWorkoutScreen() {
   const { colors, spacing, typography } = useTheme();
   const navigation = useNavigation<any>();
   const { exercises: routineExercises, loading: loadingRoutine } = useTodayRoutine();
-  const { session, sets, loading: loadingSession, addSet, completeSession } = useWorkoutSession();
+  const { session, sets, loading: loadingSession, lastNewPR, addSet, completeSession } = useWorkoutSession();
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [adHocExercises, setAdHocExercises] = useState<Exercise[]>([]);
+  const [sessionPRs, setSessionPRs] = useState<{ name: string; weight: number }[]>([]);
+
+  useEffect(() => {
+    if (lastNewPR) {
+      const exercise = workoutExercises.find(e => e.id === lastNewPR.exerciseId);
+      if (exercise && !sessionPRs.find(p => p.name === exercise.name)) {
+        setSessionPRs(prev => [...prev, { name: exercise.name, weight: lastNewPR.weight }]);
+      }
+    }
+  }, [lastNewPR]);
 
   // Combine routine exercises with any ad-hoc exercises
   const workoutExercises = useMemo(() => {
@@ -92,7 +102,8 @@ export default function LogWorkoutScreen() {
         summary: {
           exerciseCount: workoutExercises.filter(e => sets.some(s => s.exercise_id === e.id)).length,
           totalSets: sets.length,
-          date: session?.date
+          date: session?.date,
+          newPRs: sessionPRs
         }
       });
     } catch (error) {
@@ -157,6 +168,11 @@ export default function LogWorkoutScreen() {
         visible={isPickerVisible} 
         onClose={() => setIsPickerVisible(false)} 
         onSelect={handleSelectAdHoc} 
+      />
+
+      <CelebrationOverlay 
+        message="New Personal Record! 🎉" 
+        visible={!!lastNewPR} 
       />
     </SafeAreaView>
   );

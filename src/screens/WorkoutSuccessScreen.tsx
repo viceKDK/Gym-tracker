@@ -6,7 +6,14 @@ import { Button } from '../components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 
 type RootStackParamList = {
-  WorkoutSuccess: { summary: { exerciseCount: number; totalSets: number; date: string } };
+  WorkoutSuccess: { 
+    summary: { 
+      exerciseCount: number; 
+      totalSets: number; 
+      date: string;
+      newPRs?: { name: string; weight: number }[];
+    } 
+  };
 };
 
 export default function WorkoutSuccessScreen() {
@@ -40,6 +47,19 @@ export default function WorkoutSuccessScreen() {
             <Text style={[typography.small, { color: colors.textSecondary }]}>Total Sets</Text>
           </View>
         </View>
+
+        {summary.newPRs && summary.newPRs.length > 0 && (
+          <View style={[styles.prSection, { marginTop: spacing.xl }]}>
+            <Text style={[typography.bodyBold, { color: colors.text, marginBottom: spacing.sm, textAlign: 'center' }]}>
+              New PRs Achieved! ðŸŽ‰
+            </Text>
+            {summary.newPRs.map((pr, idx) => (
+              <Text key={idx} style={[typography.body, { color: colors.primary, textAlign: 'center' }]}>
+                {pr.name}: {pr.weight} kg
+              </Text>
+            ))}
+          </View>
+        )}
 
         <View style={styles.footer}>
           <Button 
@@ -83,6 +103,9 @@ const styles = StyleSheet.create({
   divider: {
     width: 1,
     height: '60%',
+  },
+  prSection: {
+    width: '100%',
   },
   footer: {
     marginTop: 48,

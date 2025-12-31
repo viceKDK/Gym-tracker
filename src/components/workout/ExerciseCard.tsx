@@ -6,6 +6,7 @@ import { CategoryBadge } from '../exercise/CategoryBadge';
 import { Card } from '../ui/Card';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SetInput } from './SetInput';
+import { PRBadge } from '../progress/PRBadge';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -71,15 +72,20 @@ export const ExerciseCard = ({ exercise, sets, onAddSet, isAdHoc }: ExerciseCard
         <View style={styles.expandedContent}>
           {sets.length > 0 && (
             <View style={[styles.setsContainer, { marginTop: spacing.md }]}>
-              {sets.map((set, index) => (
-                <View key={set.id || index} style={[styles.setRow, { paddingVertical: spacing.xs }]}>
-                  <Text style={[typography.body, { color: colors.textSecondary }]}>
-                    Set {set.set_number}: {set.weight}kg x {set.reps}
-                  </Text>
-                  <MaterialIcons name="check-circle" size={18} color={colors.success} />
-                </View>
-              ))}
-            </View>
+                        {sets.map((set, index) => {
+                          const isMaxWeight = set.weight !== null && set.weight === Math.max(...sets.map(s => s.weight || 0));
+                          return (
+                            <View key={set.id || index} style={[styles.setRow, { paddingVertical: spacing.xs }]}>
+                              <View style={styles.setInfo}>
+                                <Text style={[typography.body, { color: colors.textSecondary }]}>
+                                  Set {set.set_number}: {set.weight}kg x {set.reps}
+                                </Text>
+                                {isMaxWeight && <View style={{ marginLeft: 8 }}><PRBadge weight={set.weight!} showIcon={false} /></View>}
+                              </View>
+                              <MaterialIcons name="check-circle" size={18} color={colors.success} />
+                            </View>
+                          );
+                        })}            </View>
           )}
           <SetInput onAddSet={handleAddSet} />
         </View>
@@ -133,5 +139,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  setInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
