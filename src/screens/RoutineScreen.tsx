@@ -3,15 +3,23 @@ import { StyleSheet, ScrollView, Text, View, SafeAreaView, ActivityIndicator, Re
 import { useTheme } from '../contexts/ThemeContext';
 import { useWeeklyRoutine } from '../hooks/useWeeklyRoutine';
 import { DayCard } from '../components/routine/DayCard';
+import { TodayRoutine } from '../components/routine/TodayRoutine';
+import { useTodayRoutine } from '../hooks/useTodayRoutine';
 import { useNavigation } from '@react-navigation/native';
 import { DayOfWeek } from '../types';
 
 export default function RoutineScreen() {
   const { colors, spacing, typography } = useTheme();
-  const { overview, loading, refresh } = useWeeklyRoutine();
+  const { overview, loading: loadingWeekly, refresh: refreshWeekly } = useWeeklyRoutine();
+  const { exercises: todayExercises, loading: loadingToday, refresh: refreshToday } = useTodayRoutine();
   const navigation = useNavigation<any>();
 
   const today = new Date().getDay() as DayOfWeek;
+
+  const handleRefresh = useCallback(() => {
+    refreshWeekly();
+    refreshToday();
+  }, [refreshWeekly, refreshToday]);
 
   const handleDayPress = (day: DayOfWeek) => {
     navigation.navigate('DayConfig', { day });
@@ -25,17 +33,19 @@ export default function RoutineScreen() {
       <ScrollView 
         contentContainerStyle={{ paddingVertical: spacing.md }}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refresh} colors={[colors.primary]} />
+          <RefreshControl refreshing={loadingWeekly || loadingToday} onRefresh={handleRefresh} colors={[colors.primary]} />
         }
       >
-        <View style={{ paddingHorizontal: spacing.md, marginBottom: spacing.md }}>
+        <TodayRoutine exercises={todayExercises} loading={loadingToday} />
+
+        <View style={{ paddingHorizontal: spacing.md, marginBottom: spacing.md, marginTop: spacing.lg }}>
           <Text style={[typography.h2, { color: colors.text }]}>Weekly Routine</Text>
           <Text style={[typography.body, { color: colors.textSecondary }]}>
             Configure your training schedule
           </Text>
         </View>
 
-        {overview.length === 0 && loading ? (
+        {overview.length === 0 && loadingWeekly ? (
           <View style={styles.center}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
