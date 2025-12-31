@@ -56,6 +56,8 @@ development_status:
   2-5-search-and-filter-exercises: review
   epic-1-retrospective: optional
 
+  epic-2-retrospective: optional
+
   epic-3: in-progress
   3-1-create-routinerepository-with-data-access: review
   3-2-display-weekly-routine-overview: review
@@ -63,6 +65,8 @@ development_status:
   3-4-view-todays-scheduled-exercises: review
   3-5-mark-day-as-rest-day: review
   epic-2-retrospective: optional
+
+  epic-3-retrospective: optional
 
   epic-4: in-progress
   4-1-create-workoutrepository-for-session-management: review
@@ -75,6 +79,8 @@ development_status:
   4-8-autosave-draft-during-logging: review
   epic-3-retrospective: optional
 
+  epic-4-retrospective: optional
+
   epic-5: in-progress
   5-1-create-statsrepository-for-activity-data: review
   5-2-render-githubstyle-activity-graph: review
@@ -82,9 +88,15 @@ development_status:
   5-4-navigate-time-periods-on-activity-graph: review
   epic-4-retrospective: optional
 
+  epic-5-retrospective: optional
+
   epic-6: in-progress
   6-1-select-exercise-for-progress-tracking: review
   6-2-render-progress-chart-for-exercise: review
   6-3-calculate-and-display-personal-records: review
   6-4-visual-celebration-for-new-pr: review
   epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-comparative-training-analytics-dashboard: backlog
+  epic-7-retrospective: optional
