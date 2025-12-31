@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { WorkoutSession, WorkoutSetWithExercise, NewWorkoutSet } from '../types';
 import { WorkoutRepository } from '../database/repositories/WorkoutRepository';
 import { format } from 'date-fns';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const DRAFT_KEY = '@workout_draft';
 
 /**
  * Hook to manage an active or past workout session
@@ -23,7 +26,7 @@ export function useWorkoutSession(date: string = format(new Date(), 'yyyy-MM-dd'
       
       if (!currentSession && date === format(new Date(), 'yyyy-MM-dd')) {
         // Create today's session if it doesn't exist
-        const id = await repo.createSession(date);
+        await repo.createSession(date);
         currentSession = await repo.getSession(date);
       }
 
@@ -43,6 +46,27 @@ export function useWorkoutSession(date: string = format(new Date(), 'yyyy-MM-dd'
   useEffect(() => {
     loadSession();
   }, [loadSession]);
+
+  // Auto-save logic
+  useEffect(() => {
+    if (!session || session.completed_at) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const draft = {
+          date,
+          sessionId: session.id,
+          timestamp: new Date().getTime(),
+        };
+        await AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        console.log('[useWorkoutSession] Draft auto-saved');
+      } catch (e) {
+        console.error('[useWorkoutSession] Auto-save failed:', e);
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [session, date]);
 
   const addSet = async (exerciseId: number, weight: number | null, reps: number | null) => {
     if (!session) return;
@@ -76,6 +100,7 @@ export function useWorkoutSession(date: string = format(new Date(), 'yyyy-MM-dd'
     try {
       const repo = new WorkoutRepository();
       await repo.completeSession(session.id);
+      await AsyncStorage.removeItem(DRAFT_KEY);
       const updated = await repo.getSession(date);
       setSession(updated);
     } catch (e) {

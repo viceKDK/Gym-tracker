@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
-import { View, StyleSheet, ViewStyle, Pressable } from 'react-native';
+import { View, StyleSheet, ViewStyle, Pressable, StyleProp } from 'react-native';
 import { useTheme } from '../../contexts';
 
 interface CardProps {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   variant?: 'elevated' | 'outlined' | 'filled';
   padding?: 'none' | 'sm' | 'md' | 'lg';
@@ -63,19 +63,21 @@ export function Card({
     }
   };
 
-  const cardStyle: ViewStyle = {
-    borderRadius: borderRadius.xl, // 16px per design spec
-    padding: getPadding(),
-    ...getVariantStyle(),
-    ...style,
-  };
+  const cardStyle = [
+    {
+      borderRadius: borderRadius.xl, // 16px per design spec
+      padding: getPadding(),
+      ...getVariantStyle(),
+    },
+    style,
+  ];
 
   if (onPress) {
     return (
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
-          cardStyle,
+          ...cardStyle,
           pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] },
         ]}
       >

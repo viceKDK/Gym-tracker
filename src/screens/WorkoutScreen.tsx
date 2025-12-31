@@ -6,18 +6,22 @@ import { Button } from '../components/ui';
 import { WorkoutRepository } from '../database/repositories/WorkoutRepository';
 import { format } from 'date-fns';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useDraftRecovery } from '../hooks/useDraftRecovery';
+import { ResumeWorkoutPrompt } from '../components/workout/ResumeWorkoutPrompt';
 
 export default function WorkoutScreen() {
   const { colors, spacing, typography, borderRadius, shadows } = useTheme();
   const navigation = useNavigation<any>();
   const [hasTodaySession, setHasTodaySession] = useState(false);
+  const { draft, discardDraft, refresh: refreshDraft } = useDraftRecovery();
 
   const checkTodaySession = useCallback(async () => {
     const repo = new WorkoutRepository();
     const today = format(new Date(), 'yyyy-MM-dd');
     const session = await repo.getSession(today);
     setHasTodaySession(!!session);
-  }, []);
+    refreshDraft();
+  }, [refreshDraft]);
 
   useFocusEffect(
     useCallback(() => {
@@ -27,23 +31,10 @@ export default function WorkoutScreen() {
 
   const handleStartWorkout = () => {
     if (hasTodaySession) {
-      Alert.alert(
-        'Workout in Progress',
-        'You already have a workout session for today. What would you like to do?',
-        [
-          { text: 'Continue Session', onPress: () => navigation.navigate('LogWorkout') },
-          { text: 'Start Over (Delete)', style: 'destructive', onPress: () => startNewWorkout() },
-          { text: 'Cancel', style: 'cancel' },
-        ]
-      );
+      navigation.navigate('LogWorkout');
     } else {
       navigation.navigate('LogWorkout');
     }
-  };
-
-  const startNewWorkout = async () => {
-    // Delete logic would go here if needed, or just overwrite
-    navigation.navigate('LogWorkout', { forceNew: true });
   };
 
   return (
@@ -57,6 +48,14 @@ export default function WorkoutScreen() {
         </View>
 
         <View style={styles.content}>
+          {draft && (
+            <ResumeWorkoutPrompt 
+              timestamp={draft.timestamp} 
+              onResume={() => navigation.navigate('LogWorkout')}
+              onDiscard={discardDraft}
+            />
+          )}
+
           <TouchableOpacity 
             activeOpacity={0.8}
             onPress={handleStartWorkout}
@@ -66,7 +65,8 @@ export default function WorkoutScreen() {
                 backgroundColor: colors.primary, 
                 borderRadius: borderRadius.xl,
                 padding: spacing.xl,
-                ...shadows.lg
+                ...shadows.lg,
+                marginTop: draft ? 0 : spacing.xl
               }
             ]}
           >
