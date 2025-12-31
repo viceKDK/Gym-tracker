@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, ScrollView, View, Text, SafeAreaView } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { TodayWorkoutPreview } from '../components/routine/TodayWorkoutPreview';
 import { ActivityGraph } from '../components/activity/ActivityGraph';
+import { StreakCounter } from '../components/activity/StreakCounter';
 import { useTodayRoutine } from '../hooks/useTodayRoutine';
 import { useActivityData } from '../hooks/useActivityData';
-import { useNavigation } from '@react-navigation/native';
+import { useStreak } from '../hooks/useStreak';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const { colors, typography, spacing } = useTheme();
   const { exercises } = useTodayRoutine();
-  const { data: activityData, loading: loadingActivity } = useActivityData();
+  const { data: activityData, refresh: refreshActivity } = useActivityData();
+  const { streak, refresh: refreshStreak } = useStreak();
   const navigation = useNavigation<any>();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshActivity();
+      refreshStreak();
+    }, [refreshActivity, refreshStreak])
+  );
 
   const handleStartWorkout = () => {
     navigation.navigate('Workout');
@@ -24,6 +34,8 @@ export default function HomeScreen() {
           <Text style={[typography.h2, { color: colors.text }]}>Welcome back!</Text>
           <Text style={[typography.body, { color: colors.textSecondary }]}>Ready for your training?</Text>
         </View>
+
+        <StreakCounter count={streak} />
 
         <TodayWorkoutPreview 
           exercises={exercises} 
