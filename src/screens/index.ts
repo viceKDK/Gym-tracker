@@ -8,3 +8,4 @@ export { default as DayConfigScreen } from './DayConfigScreen';
 export { default as LogWorkoutScreen } from './LogWorkoutScreen';
 export { default as WorkoutSuccessScreen } from './WorkoutSuccessScreen';
 export { default as WorkoutHistoryScreen } from './WorkoutHistoryScreen';
+export { default as WorkoutDetailScreen } from './WorkoutDetailScreen';
