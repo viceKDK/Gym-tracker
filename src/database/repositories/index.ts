@@ -1,2 +1,3 @@
 export * from './BaseRepository';
 export * from './ExerciseRepository';
+export * from './RoutineRepository';

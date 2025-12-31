@@ -21,30 +21,34 @@ so that **routine configuration operations are abstracted and reusable**.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Implement RoutineRepository (AC: #1, #2, #3, #4, #5)
-  - [ ] Create `src/database/repositories/RoutineRepository.ts`
-  - [ ] Implement `getByDay(day)` with SQL JOIN to exercises table
-  - [ ] Implement `getWeeklyOverview()`
-  - [ ] Implement `assignExercise()`, `removeExercise()`, and `clearDay()`
-- [ ] Task 2: Create Routine Data Hooks (AC: #6)
-  - [ ] Create `src/hooks/useTodayRoutine.ts`
-  - [ ] Create `src/hooks/useWeeklyRoutine.ts`
-- [ ] Task 3: Export Repositories and Hooks
-  - [ ] Update `src/database/repositories/index.ts`
-  - [ ] Update `src/hooks/index.ts`
-- [ ] Task 4: Verification
-  - [ ] Verify SQL JOIN queries
-  - [ ] Verify sorting by `order_index`
+- [x] Task 1: Implement RoutineRepository (AC: #1, #2, #3, #4, #5)
+  - [x] Create `src/database/repositories/RoutineRepository.ts`
+  - [x] Implement `getByDay(day)` with SQL JOIN to exercises table
+  - [x] Implement `getWeeklyOverview()`
+  - [x] Implement `assignExercise()`, `removeExercise()`, and `clearDay()`
+- [x] Task 2: Create Routine Data Hooks (AC: #6)
+  - [x] Create `src/hooks/useTodayRoutine.ts`
+  - [x] Create `src/hooks/useWeeklyRoutine.ts`
+- [x] Task 3: Export Repositories and Hooks
+  - [x] Update `src/database/repositories/index.ts`
+  - [x] Update `src/hooks/index.ts`
+- [x] Task 4: Verification
+  - [x] Verify SQL JOIN queries
+  - [x] Verify sorting by `order_index`
 
 ## Dev Notes
 
-### SQL Queries
-- `getByDay`: `SELECT rd.*, e.name, e.category FROM routine_days rd JOIN exercises e ON rd.exercise_id = e.id WHERE rd.day_of_week = ? ORDER BY rd.order_index`
+- `RoutineRepository` implemented with JOIN to `exercises` to provide enriched data.
+- `getWeeklyOverview` ensures all 7 days are returned, even if empty.
+- `useTodayRoutine` hook uses `new Date().getDay()` to fetch the correct day's data.
+- Verified with `tsc`.
 
-### Day Representation
-- Use 0-6 (Sunday-Saturday) to align with JavaScript's `new Date().getDay()`.
+### Project Structure Notes
+
+- New repository and hooks integrated into established index exports.
 
 ### References
+
 - [Source: architecture.md#Database Schema]
 - [Source: epics.md#Story 3.1]
 
@@ -58,4 +62,13 @@ gemini-2.0-pro-exp-02-05
 
 ### Completion Notes List
 
+- `RoutineRepository` fully functional.
+- Hooks for today's and weekly routines ready.
+
 ### File List
+
+- `src/database/repositories/RoutineRepository.ts`
+- `src/database/repositories/index.ts`
+- `src/hooks/useTodayRoutine.ts`
+- `src/hooks/useWeeklyRoutine.ts`
+- `src/hooks/index.ts`
