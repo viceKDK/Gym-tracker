@@ -61,8 +61,8 @@ development_status:
   3-2-display-weekly-routine-overview: review
   3-3-configure-exercises-for-a-day: review
   3-4-view-todays-scheduled-exercises: review
-  3-5-mark-day-as-rest-day: ready-for-dev
-  epic-3-retrospective: optional
+  3-5-mark-day-as-rest-day: review
+  epic-2-retrospective: optional
 
   epic-4: in-progress
   4-1-create-workoutrepository-for-session-management: ready-for-dev

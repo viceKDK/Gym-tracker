@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { StyleSheet, SectionList, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, SectionList, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useExercises } from '../hooks/useExercises';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
@@ -74,24 +74,36 @@ export default function DayConfigScreen() {
   };
 
   const handleClearDay = async () => {
-    try {
-      const repo = new RoutineRepository();
-      await repo.clearDay(day);
-      setAssignedExercises([]);
-    } catch (error) {
-      console.error('[DayConfig] Failed to clear day:', error);
-    }
+    Alert.alert(
+      'Mark as Rest Day',
+      'This will remove all exercises from this day. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Mark Rest Day', 
+          onPress: async () => {
+            try {
+              const repo = new RoutineRepository();
+              await repo.clearDay(day);
+              setAssignedExercises([]);
+            } catch (error) {
+              console.error('[DayConfig] Failed to clear day:', error);
+            }
+          }
+        }
+      ]
+    );
   };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={handleClearDay} style={{ padding: 8 }}>
-          <MaterialIcons name="delete-sweep" size={24} color={colors.error} />
+        <TouchableOpacity onPress={handleClearDay} style={{ padding: 8, flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="event-busy" size={24} color={colors.error} />
         </TouchableOpacity>
       ),
     });
-  }, [navigation, colors.error]);
+  }, [navigation, colors.error, day]);
 
   if (isLoading || loadingExercises) {
     return (

@@ -28,13 +28,15 @@ export const DayCard = ({ dayOfWeek, exerciseNames, isToday, onPress }: DayCardP
     return summary;
   };
 
+  const isRestDay = exerciseNames.length === 0;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       style={[
         styles.card,
         { 
-          backgroundColor: colors.surface,
+          backgroundColor: isRestDay ? '#F8F9FA' : colors.surface,
           padding: spacing.md,
           marginBottom: spacing.md,
           borderRadius: borderRadius.xl,
@@ -56,7 +58,10 @@ export const DayCard = ({ dayOfWeek, exerciseNames, isToday, onPress }: DayCardP
             </View>
           )}
         </View>
-        <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+        <View style={styles.rightHeader}>
+          {isRestDay && <MaterialIcons name="self-improvement" size={20} color={colors.textSecondary} style={{ marginRight: 8 }} />}
+          <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+        </View>
       </View>
       
       <Text 
@@ -84,6 +89,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  rightHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   titleRow: {
     flexDirection: 'row',
