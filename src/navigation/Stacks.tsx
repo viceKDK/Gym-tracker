@@ -1,0 +1,55 @@
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { 
+  HomeScreen, 
+  WorkoutScreen, 
+  RoutineScreen, 
+  ExercisesScreen, 
+  ProgressScreen 
+} from '../screens';
+
+const HomeStack = createNativeStackNavigator();
+const WorkoutStack = createNativeStackNavigator();
+const RoutineStack = createNativeStackNavigator();
+const ExerciseStack = createNativeStackNavigator();
+const ProgressStack = createNativeStackNavigator();
+
+export function HomeStackNavigator() {
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="HomeIndex" component={HomeScreen} options={{ title: 'Home' }} />
+    </HomeStack.Navigator>
+  );
+}
+
+export function WorkoutStackNavigator() {
+  return (
+    <WorkoutStack.Navigator>
+      <WorkoutStack.Screen name="WorkoutIndex" component={WorkoutScreen} options={{ title: 'Workout' }} />
+    </WorkoutStack.Navigator>
+  );
+}
+
+export function RoutineStackNavigator() {
+  return (
+    <RoutineStack.Navigator>
+      <RoutineStack.Screen name="RoutineIndex" component={RoutineScreen} options={{ title: 'Routine' }} />
+    </RoutineStack.Navigator>
+  );
+}
+
+export function ExerciseStackNavigator() {
+  return (
+    <ExerciseStack.Navigator>
+      <ExerciseStack.Screen name="ExerciseIndex" component={ExercisesScreen} options={{ title: 'Exercises' }} />
+    </ExerciseStack.Navigator>
+  );
+}
+
+export function ProgressStackNavigator() {
+  return (
+    <ProgressStack.Navigator>
+      <ProgressStack.Screen name="ProgressIndex" component={ProgressScreen} options={{ title: 'Progress' }} />
+    </ProgressStack.Navigator>
+  );
+}
