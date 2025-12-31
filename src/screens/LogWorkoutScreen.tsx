@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useState } from 'react';
-import { StyleSheet, FlatList, View, Text, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList, View, Text, SafeAreaView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTodayRoutine } from '../hooks/useTodayRoutine';
 import { useWorkoutSession } from '../hooks/useWorkoutSession';
@@ -8,11 +8,13 @@ import { ExercisePicker } from '../components/workout/ExercisePicker';
 import { Button } from '../components/ui';
 import { Exercise } from '../types';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function LogWorkoutScreen() {
   const { colors, spacing, typography } = useTheme();
+  const navigation = useNavigation<any>();
   const { exercises: routineExercises, loading: loadingRoutine } = useTodayRoutine();
-  const { session, sets, loading: loadingSession, addSet } = useWorkoutSession();
+  const { session, sets, loading: loadingSession, addSet, completeSession } = useWorkoutSession();
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [adHocExercises, setAdHocExercises] = useState<Exercise[]>([]);
 
@@ -68,6 +70,37 @@ export default function LogWorkoutScreen() {
     setAdHocExercises(prev => [...prev, exercise]);
   };
 
+  const handleFinishWorkout = async () => {
+    if (sets.length === 0) {
+      Alert.alert(
+        'Empty Workout',
+        'No sets logged yet. Are you sure you want to finish?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Finish Anyway', onPress: () => performFinish() },
+        ]
+      );
+    } else {
+      performFinish();
+    }
+  };
+
+  const performFinish = async () => {
+    try {
+      await completeSession();
+      navigation.replace('WorkoutSuccess', {
+        summary: {
+          exerciseCount: workoutExercises.filter(e => sets.some(s => s.exercise_id === e.id)).length,
+          totalSets: sets.length,
+          date: session?.date
+        }
+      });
+    } catch (error) {
+      console.error('[LogWorkout] Failed to finish:', error);
+      Alert.alert('Error', 'Failed to save workout completion.');
+    }
+  };
+
   if (loadingRoutine || loadingSession) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
@@ -115,7 +148,7 @@ export default function LogWorkoutScreen() {
         }
         ListFooterComponent={
           <View style={{ padding: spacing.md, paddingBottom: 40 }}>
-            <Button title="Finish Workout" onPress={() => {}} variant="primary" />
+            <Button title="Finish Workout" onPress={handleFinishWorkout} variant="primary" />
           </View>
         }
       />

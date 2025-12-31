@@ -6,3 +6,4 @@ export { default as ProgressScreen } from './ProgressScreen';
 export { default as ExerciseFormScreen } from './ExerciseFormScreen';
 export { default as DayConfigScreen } from './DayConfigScreen';
 export { default as LogWorkoutScreen } from './LogWorkoutScreen';
+export { default as WorkoutSuccessScreen } from './WorkoutSuccessScreen';
