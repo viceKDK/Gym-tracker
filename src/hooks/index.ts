@@ -6,3 +6,4 @@ export * from './useDraftRecovery';
 export * from './useActivityData';
 export * from './useStreak';
 export * from './useProgressExercises';
+export * from './useExerciseProgress';

@@ -76,6 +76,21 @@ export class StatsRepository extends BaseRepository {
   }
 
   /**
+   * Get historical progress for an exercise (max weight per session)
+   */
+  async getExerciseProgress(exerciseId: number): Promise<{ date: string; max_weight: number }[]> {
+    return await this.getAllAsync<{ date: string; max_weight: number }>(
+      `SELECT ws.date, MAX(wst.weight) as max_weight 
+       FROM workout_sessions ws 
+       JOIN workout_sets wst ON ws.id = wst.session_id 
+       WHERE wst.exercise_id = ? 
+       GROUP BY ws.date 
+       ORDER BY ws.date ASC`,
+      [exerciseId]
+    );
+  }
+
+  /**
    * Helper to map exercise count to intensity level (0-4)
    */
   private calculateActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {

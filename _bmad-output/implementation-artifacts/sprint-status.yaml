@@ -84,7 +84,7 @@ development_status:
 
   epic-6: in-progress
   6-1-select-exercise-for-progress-tracking: review
-  6-2-render-progress-chart-for-exercise: ready-for-dev
+  6-2-render-progress-chart-for-exercise: review
   6-3-calculate-and-display-personal-records: ready-for-dev
   6-4-visual-celebration-for-new-pr: ready-for-dev
   epic-6-retrospective: optional
