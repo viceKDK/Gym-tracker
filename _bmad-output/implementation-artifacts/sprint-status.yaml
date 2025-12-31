@@ -70,7 +70,7 @@ development_status:
   4-3-log-sets-with-weight-and-reps: review
   4-4-add-adhoc-exercise-to-workout: review
   4-5-complete-and-save-workout-session: review
-  4-6-view-past-workout-history: ready-for-dev
+  4-6-view-past-workout-history: review
   4-7-view-past-workout-details: ready-for-dev
   4-8-autosave-draft-during-logging: ready-for-dev
   epic-4-retrospective: optional
