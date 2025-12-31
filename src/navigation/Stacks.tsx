@@ -5,7 +5,8 @@ import {
   WorkoutScreen, 
   RoutineScreen, 
   ExercisesScreen, 
-  ProgressScreen 
+  ProgressScreen,
+  ExerciseFormScreen
 } from '../screens';
 
 const HomeStack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ export function ExerciseStackNavigator() {
   return (
     <ExerciseStack.Navigator>
       <ExerciseStack.Screen name="ExerciseIndex" component={ExercisesScreen} options={{ title: 'Exercises' }} />
+      <ExerciseStack.Screen name="ExerciseForm" component={ExerciseFormScreen} options={({ route }: any) => ({ title: route.params?.exerciseId ? 'Edit Exercise' : 'New Exercise' })} />
     </ExerciseStack.Navigator>
   );
 }
