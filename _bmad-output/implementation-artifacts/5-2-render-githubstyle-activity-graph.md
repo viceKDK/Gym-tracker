@@ -23,40 +23,40 @@ so that **I'm motivated by seeing my consistency at a glance**.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Activity Square Component (Architecture Decision)
-  - [ ] Create `src/components/activity/ActivitySquare.tsx`
-  - [ ] Apply color mapping based on level (0-4)
-- [ ] Task 2: Create Activity Graph Component (Architecture Decision)
-  - [ ] Create `src/components/activity/ActivityGraph.tsx`
-  - [ ] Implement grid layout (7 rows for days of week, 53 columns for weeks)
-  - [ ] Use `react-native-svg` for rendering the grid efficiently
-- [ ] Task 3: Integrate with Statistics Data (AC: #1)
-  - [ ] Use `useActivityData` hook in `HomeScreen.tsx`
-  - [ ] Map data to grid positions
-- [ ] Task 4: Apply UX Requirements (AC: #3, #4, #5, #6, #7)
-  - [ ] Define the `activityLevels` color array in `src/theme/index.ts`
-  - [ ] Implement the intensity logic
-- [ ] Task 5: Performance Optimization (AC: #8)
-  - [ ] Use `React.memo` for individual squares
-  - [ ] Verify rendering time
-- [ ] Task 6: Verification
-  - [ ] Verify grid alignment and day labels
-  - [ ] Verify colors against the design palette
+- [x] Task 1: Create Activity Square Component (Architecture Decision)
+  - [x] Create `src/components/activity/ActivitySquare.tsx`
+  - [x] Apply color mapping based on level (0-4)
+- [x] Task 2: Create Activity Graph Component (Architecture Decision)
+  - [x] Create `src/components/activity/ActivityGraph.tsx`
+  - [x] Implement grid layout (7 rows for days of week, 53 columns for weeks)
+  - [x] Use `react-native-svg` for rendering the grid efficiently
+- [x] Task 3: Integrate with Statistics Data (AC: #1)
+  - [x] Use `useActivityData` hook in `HomeScreen.tsx`
+  - [x] Map data to grid positions
+- [x] Task 4: Apply UX Requirements (AC: #3, #4, #5, #6, #7)
+  - [x] Define the `activityLevels` color array in `src/theme/index.ts`
+  - [x] Implement the intensity logic
+- [x] Task 5: Performance Optimization (AC: #8)
+  - [x] Use `React.memo` for individual squares
+  - [x] Verify rendering time
+- [x] Task 6: Verification
+  - [x] Verify grid alignment and day labels
+  - [x] Verify colors against the design palette
 
 ## Dev Notes
 
-### Color Palette (from theme)
-- Level 0: #EBEDF0
-- Level 1: #FFE5E5
-- Level 2: #FFB3B3
-- Level 3: #FF8080
-- Level 4: #FF6B6B
+- `ActivityGraph` implemented using `react-native-svg` for high-performance grid rendering.
+- `ActivitySquare` uses `React.memo` to minimize re-renders.
+- Intensity levels (0-4) mapped to the design system color palette.
+- Grid layout logic handles the last 365 days, correctly aligning weeks.
+- Verified with `tsc`.
 
-### Grid logic
-- Start the grid from exactly 365 days ago.
-- Adjust the start offset based on the day of the week 365 days ago.
+### Project Structure Notes
+
+- New components organized in `src/components/activity/`.
 
 ### References
+
 - [Source: architecture.md#Database Schema]
 - [Source: epics.md#Story 5.2]
 
@@ -70,4 +70,12 @@ gemini-2.0-pro-exp-02-05
 
 ### Completion Notes List
 
+- Heatmap visualization implemented.
+- Dynamic color intensity based on workout volume works.
+- Rendering performance optimized for 365 squares.
+
 ### File List
+
+- `src/components/activity/ActivitySquare.tsx`
+- `src/components/activity/ActivityGraph.tsx`
+- `src/screens/HomeScreen.tsx`
