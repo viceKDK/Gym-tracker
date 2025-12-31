@@ -45,9 +45,12 @@ export default function LogWorkoutScreen() {
     ];
   }, [routineExercises, sets]);
 
-  const handleAddSet = (exerciseId: number) => {
-    // Input logic will be implemented in Story 4.3
-    console.log('Add set for', exerciseId);
+  const handleAddSet = async (exerciseId: number, weight: number | null, reps: number | null) => {
+    try {
+      await addSet(exerciseId, weight, reps);
+    } catch (error) {
+      console.error('[LogWorkout] Failed to add set:', error);
+    }
   };
 
   if (loadingRoutine || loadingSession) {
@@ -68,7 +71,7 @@ export default function LogWorkoutScreen() {
             exercise={item}
             isAdHoc={item.isAdHoc}
             sets={sets.filter(s => s.exercise_id === item.id)}
-            onAddSet={() => handleAddSet(item.id)}
+            onAddSet={(weight, reps) => handleAddSet(item.id, weight, reps)}
           />
         )}
         ListHeaderComponent={

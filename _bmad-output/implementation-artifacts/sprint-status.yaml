@@ -67,7 +67,7 @@ development_status:
   epic-4: in-progress
   4-1-create-workoutrepository-for-session-management: review
   4-2-start-workout-session-with-preloaded-exercises: review
-  4-3-log-sets-with-weight-and-reps: ready-for-dev
+  4-3-log-sets-with-weight-and-reps: review
   4-4-add-adhoc-exercise-to-workout: ready-for-dev
   4-5-complete-and-save-workout-session: ready-for-dev
   4-6-view-past-workout-history: ready-for-dev

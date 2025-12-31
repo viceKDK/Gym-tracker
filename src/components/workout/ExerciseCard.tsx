@@ -1,53 +1,87 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Exercise, WorkoutSetWithExercise } from '../../types';
 import { CategoryBadge } from '../exercise/CategoryBadge';
 import { Card } from '../ui/Card';
 import { MaterialIcons } from '@expo/vector-icons';
+import { SetInput } from './SetInput';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 interface ExerciseCardProps {
   exercise: Exercise;
   sets: WorkoutSetWithExercise[];
-  onAddSet: () => void;
+  onAddSet: (weight: number | null, reps: number | null) => void;
   isAdHoc?: boolean;
 }
 
 export const ExerciseCard = ({ exercise, sets, onAddSet, isAdHoc }: ExerciseCardProps) => {
   const { colors, spacing, typography, borderRadius } = useTheme();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsExpanded(!isExpanded);
+  };
+
+  const handleAddSet = (weight: number | null, reps: number | null) => {
+    onAddSet(weight, reps);
+  };
 
   return (
     <Card style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.titleContent}>
-          <View style={styles.nameRow}>
-            <Text style={[typography.bodyBold, { color: colors.text }]}>{exercise.name}</Text>
-            {isAdHoc && (
-              <View style={[styles.adHocBadge, { backgroundColor: colors.border, borderRadius: borderRadius.sm }]}>
-                <Text style={typography.small}>ADDED</Text>
-              </View>
-            )}
-          </View>
-          <CategoryBadge category={exercise.category} />
-        </View>
-        <TouchableOpacity 
-          style={[styles.addButton, { backgroundColor: colors.secondary, borderRadius: borderRadius.full }]}
-          onPress={onAddSet}
-        >
-          <MaterialIcons name="add" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {sets.length > 0 && (
-        <View style={[styles.setsContainer, { marginTop: spacing.md }]}>
-          {sets.map((set, index) => (
-            <View key={set.id || index} style={[styles.setRow, { paddingVertical: spacing.xs }]}>
-              <Text style={[typography.body, { color: colors.textSecondary }]}>
-                Set {set.set_number}: {set.weight}kg x {set.reps}
-              </Text>
-              <MaterialIcons name="check-circle" size={18} color={colors.success} />
+      <TouchableOpacity activeOpacity={0.7} onPress={toggleExpand}>
+        <View style={styles.header}>
+          <View style={styles.titleContent}>
+            <View style={styles.nameRow}>
+              <Text style={[typography.bodyBold, { color: colors.text }]}>{exercise.name}</Text>
+              {isAdHoc && (
+                <View style={[styles.adHocBadge, { backgroundColor: colors.border, borderRadius: borderRadius.sm }]}>
+                  <Text style={typography.small}>ADDED</Text>
+                </View>
+              )}
             </View>
-          ))}
+            <CategoryBadge category={exercise.category} />
+          </View>
+          <View style={styles.headerRight}>
+            <Text style={[typography.small, { color: colors.textSecondary, marginRight: spacing.sm }]}>
+              {sets.length} sets
+            </Text>
+            <MaterialIcons 
+              name={isExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+              size={24} 
+              color={colors.textSecondary} 
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      {sets.length > 0 && !isExpanded && (
+        <View style={styles.miniSets}>
+          <Text style={[typography.small, { color: colors.textSecondary }]} numberOfLines={1}>
+            Last: {sets[sets.length - 1].weight}kg x {sets[sets.length - 1].reps}
+          </Text>
+        </View>
+      )}
+
+      {isExpanded && (
+        <View style={styles.expandedContent}>
+          {sets.length > 0 && (
+            <View style={[styles.setsContainer, { marginTop: spacing.md }]}>
+              {sets.map((set, index) => (
+                <View key={set.id || index} style={[styles.setRow, { paddingVertical: spacing.xs }]}>
+                  <Text style={[typography.body, { color: colors.textSecondary }]}>
+                    Set {set.set_number}: {set.weight}kg x {set.reps}
+                  </Text>
+                  <MaterialIcons name="check-circle" size={18} color={colors.success} />
+                </View>
+              ))}
+            </View>
+          )}
+          <SetInput onAddSet={handleAddSet} />
         </View>
       )}
     </Card>
@@ -58,6 +92,7 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
     marginBottom: 16,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -66,6 +101,10 @@ const styles = StyleSheet.create({
   },
   titleContent: {
     flex: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   nameRow: {
     flexDirection: 'row',
@@ -77,13 +116,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingVertical: 1,
   },
-  addButton: {
-    padding: 8,
+  miniSets: {
+    marginTop: 4,
+  },
+  expandedContent: {
+    marginTop: 8,
   },
   setsContainer: {
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
     paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   setRow: {
     flexDirection: 'row',
