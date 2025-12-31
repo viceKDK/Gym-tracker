@@ -5,6 +5,7 @@ import { RoutineRepository } from '../database/repositories/RoutineRepository';
 interface DayOverview {
   day_of_week: DayOfWeek;
   exercise_count: number;
+  exercise_names: string[];
 }
 
 /**

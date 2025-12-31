@@ -17,20 +17,24 @@ export class RoutineRepository extends BaseRepository {
   }
 
   /**
-   * Get an overview of the weekly routine (count of exercises per day)
+   * Get an overview of the weekly routine (count and names of exercises per day)
    */
-  async getWeeklyOverview(): Promise<{ day_of_week: DayOfWeek; exercise_count: number }[]> {
-    const results = await this.getAllAsync<{ day_of_week: DayOfWeek; exercise_count: number }>(
-      `SELECT day_of_week, COUNT(*) as exercise_count 
-       FROM routine_days 
-       GROUP BY day_of_week`
+  async getWeeklyOverview(): Promise<{ day_of_week: DayOfWeek; exercise_count: number; exercise_names: string[] }[]> {
+    const results = await this.getAllAsync<{ day_of_week: DayOfWeek; exercise_id: number; exercise_name: string }>(
+      `SELECT rd.day_of_week, rd.exercise_id, e.name as exercise_name 
+       FROM routine_days rd 
+       JOIN exercises e ON rd.exercise_id = e.id 
+       ORDER BY rd.day_of_week, rd.order_index ASC`
     );
 
-    // Ensure all 7 days are represented
     const overview = Array.from({ length: 7 }, (_, i) => {
       const day = i as DayOfWeek;
-      const found = results.find(r => r.day_of_week === day);
-      return found || { day_of_week: day, exercise_count: 0 };
+      const dayExercises = results.filter(r => r.day_of_week === day);
+      return {
+        day_of_week: day,
+        exercise_count: dayExercises.length,
+        exercise_names: dayExercises.map(e => e.exercise_name),
+      };
     });
 
     return overview;

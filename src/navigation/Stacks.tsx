@@ -6,7 +6,8 @@ import {
   RoutineScreen, 
   ExercisesScreen, 
   ProgressScreen,
-  ExerciseFormScreen
+  ExerciseFormScreen,
+  DayConfigScreen
 } from '../screens';
 
 const HomeStack = createNativeStackNavigator();
@@ -35,6 +36,7 @@ export function RoutineStackNavigator() {
   return (
     <RoutineStack.Navigator>
       <RoutineStack.Screen name="RoutineIndex" component={RoutineScreen} options={{ title: 'Routine' }} />
+      <RoutineStack.Screen name="DayConfig" component={DayConfigScreen} options={({ route }: any) => ({ title: 'Configure Day' })} />
     </RoutineStack.Navigator>
   );
 }
