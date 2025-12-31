@@ -1,10 +1,12 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { StyleSheet, SectionList, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useExercises } from '../hooks/useExercises';
 import { ExerciseItem } from '../components/exercise/ExerciseItem';
+import { SearchBar } from '../components/exercise/SearchBar';
+import { CategoryFilter } from '../components/exercise/CategoryFilter';
 import { EmptyState } from '../components/ui';
-import { Exercise } from '../types';
+import { Exercise, ExerciseCategory } from '../types';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -13,11 +15,22 @@ export default function ExercisesScreen() {
   const { exercises, loading, error, refresh } = useExercises();
   const navigation = useNavigation<any>();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<ExerciseCategory | 'all'>('all');
+
+  const filteredExercises = useMemo(() => {
+    return exercises.filter(e => {
+      const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || e.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [exercises, searchQuery, selectedCategory]);
+
   const sections = useMemo(() => [
-    { title: 'Gym', data: exercises.filter(e => e.category === 'gym') },
-    { title: 'Cardio', data: exercises.filter(e => e.category === 'cardio') },
-    { title: 'Abs', data: exercises.filter(e => e.category === 'abs') },
-  ].filter(s => s.data.length > 0), [exercises]);
+    { title: 'Gym', data: filteredExercises.filter(e => e.category === 'gym') },
+    { title: 'Cardio', data: filteredExercises.filter(e => e.category === 'cardio') },
+    { title: 'Abs', data: filteredExercises.filter(e => e.category === 'abs') },
+  ].filter(s => s.data.length > 0), [filteredExercises]);
 
   const handleAddPress = useCallback(() => {
     navigation.navigate('ExerciseForm');
@@ -29,6 +42,11 @@ export default function ExercisesScreen() {
       initialData: { name: exercise.name, category: exercise.category }
     });
   }, [navigation]);
+
+  const handleReset = useCallback(() => {
+    setSearchQuery('');
+    setSelectedCategory('all');
+  }, []);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -50,6 +68,16 @@ export default function ExercisesScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SearchBar 
+        value={searchQuery} 
+        onChangeText={setSearchQuery} 
+        onClear={() => setSearchQuery('')} 
+      />
+      <CategoryFilter 
+        selectedCategory={selectedCategory} 
+        onSelect={setSelectedCategory} 
+      />
+      
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id.toString()}
@@ -63,13 +91,21 @@ export default function ExercisesScreen() {
         )}
         stickySectionHeadersEnabled={false}
         ListEmptyComponent={
-          <EmptyState 
-            message="No exercises yet. Build your personal library!" 
-            ctaLabel="Add First Exercise"
-            onCtaPress={handleAddPress}
-          />
+          exercises.length === 0 ? (
+            <EmptyState 
+              message="No exercises yet. Build your personal library!" 
+              ctaLabel="Add First Exercise"
+              onCtaPress={handleAddPress}
+            />
+          ) : (
+            <EmptyState 
+              message="No exercises found matching your search." 
+              ctaLabel="Clear Filters"
+              onCtaPress={handleReset}
+            />
+          )
         }
-        contentContainerStyle={exercises.length === 0 ? styles.emptyContent : styles.content}
+        contentContainerStyle={filteredExercises.length === 0 ? styles.emptyContent : styles.content}
         onRefresh={refresh}
         refreshing={loading}
       />

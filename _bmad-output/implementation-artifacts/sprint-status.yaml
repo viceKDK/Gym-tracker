@@ -53,8 +53,8 @@ development_status:
   2-2-display-exercise-list-by-category: review
   2-3-create-new-exercise: review
   2-4-edit-and-delete-exercise: review
-  2-5-search-and-filter-exercises: ready-for-dev
-  epic-2-retrospective: optional
+  2-5-search-and-filter-exercises: review
+  epic-1-retrospective: optional
 
   epic-3: in-progress
   3-1-create-routinerepository-with-data-access: ready-for-dev
