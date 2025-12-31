@@ -59,7 +59,7 @@ development_status:
   epic-3: in-progress
   3-1-create-routinerepository-with-data-access: review
   3-2-display-weekly-routine-overview: review
-  3-3-configure-exercises-for-a-day: ready-for-dev
+  3-3-configure-exercises-for-a-day: review
   3-4-view-todays-scheduled-exercises: ready-for-dev
   3-5-mark-day-as-rest-day: ready-for-dev
   epic-3-retrospective: optional

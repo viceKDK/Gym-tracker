@@ -4,12 +4,15 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { Exercise } from '../../types';
 import { CategoryBadge } from './CategoryBadge';
 
+import { MaterialIcons } from '@expo/vector-icons';
+
 interface ExerciseItemProps {
   exercise: Exercise;
+  selected?: boolean;
   onPress?: (exercise: Exercise) => void;
 }
 
-export const ExerciseItem = React.memo(({ exercise, onPress }: ExerciseItemProps) => {
+export const ExerciseItem = React.memo(({ exercise, selected, onPress }: ExerciseItemProps) => {
   const { colors, spacing, typography, shadows } = useTheme();
 
   return (
@@ -23,16 +26,23 @@ export const ExerciseItem = React.memo(({ exercise, onPress }: ExerciseItemProps
           marginBottom: spacing.sm,
           marginHorizontal: spacing.md,
           borderRadius: 12,
+          borderWidth: selected ? 2 : 0,
+          borderColor: colors.secondary,
           ...shadows.sm
         }
       ]}
       onPress={() => onPress?.(exercise)}
     >
       <View style={styles.content}>
-        <Text style={[typography.bodyBold, { color: colors.text }]}>
-          {exercise.name}
-        </Text>
-        <CategoryBadge category={exercise.category} />
+        <View style={styles.leftContent}>
+          <Text style={[typography.bodyBold, { color: colors.text }]}>
+            {exercise.name}
+          </Text>
+          <CategoryBadge category={exercise.category} />
+        </View>
+        {selected && (
+          <MaterialIcons name="check-circle" size={24} color={colors.secondary} />
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -47,5 +57,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  leftContent: {
+    flex: 1,
   },
 });
