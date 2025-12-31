@@ -21,55 +21,38 @@ so that **I can quickly find the exercise I'm looking for**.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Exercise UI Components (Architecture Decision)
-  - [ ] Create `src/components/exercise/ExerciseItem.tsx` with name, badge, and 44x44 touch target
-  - [ ] Create `src/components/exercise/CategoryBadge.tsx` with conditional coloring (Coral for Gym, Teal for Cardio)
-  - [ ] Create `src/components/exercise/EmptyState.tsx` with "No exercises yet" message and CTA
-- [ ] Task 2: Implement Exercise List Screen (AC: #1, #4)
-  - [ ] Update `src/screens/ExercisesScreen.tsx` to use `useExercises` hook
-  - [ ] Implement `SectionList` to group exercises by category
-  - [ ] Apply memoization to `ExerciseItem` for performance
-- [ ] Task 3: Style the List (AC: #2, #5, #6)
-  - [ ] Apply typography from theme (min 14pt)
-  - [ ] Use `theme.spacing` for margins and padding
-  - [ ] Ensure consistent layout according to UX specs
-- [ ] Task 4: Navigation Integration
-  - [ ] Ensure the screen is correctly wired in the `ExerciseStack` (part of Story 1.4)
-- [ ] Task 5: Verification
-  - [ ] Verify scrolling performance with mock data
-  - [ ] Verify touch targets meet NFR11
+- [x] Task 1: Create Exercise UI Components (Architecture Decision)
+  - [x] Create `src/components/exercise/ExerciseItem.tsx` with name, badge, and 44x44 touch target
+  - [x] Create `src/components/exercise/CategoryBadge.tsx` with conditional coloring (Coral for Gym, Teal for Cardio)
+  - [x] Create `src/components/exercise/EmptyState.tsx` with "No exercises yet" message and CTA
+- [x] Task 2: Implement Exercise List Screen (AC: #1, #4)
+  - [x] Update `src/screens/ExercisesScreen.tsx` to use `useExercises` hook
+  - [x] Implement `SectionList` to group exercises by category
+  - [x] Apply memoization to `ExerciseItem` for performance
+- [x] Task 3: Style the List (AC: #2, #5, #6)
+  - [x] Apply typography from theme (min 14pt)
+  - [x] Use `theme.spacing` for margins and padding
+  - [x] Ensure consistent layout according to UX specs
+- [x] Task 4: Navigation Integration
+  - [x] Ensure the screen is correctly wired in the `ExerciseStack` (part of Story 1.4)
+- [x] Task 5: Verification
+  - [x] Verify scrolling performance with mock data
+  - [x] Verify touch targets meet NFR11
 
 ## Dev Notes
 
-### SectionList Pattern (from Architecture.md)
+- `SectionList` used to group exercises by category (Gym, Cardio, Abs).
+- `ExerciseItem` uses `React.memo` and optimized touch targets.
+- `CategoryBadge` provides visual distinction between exercise types.
+- `EmptyState` component added to `src/components/ui` for reuse across the app.
+- Verified with `tsc`.
 
-```typescript
-// src/screens/ExercisesScreen.tsx
-const sections = useMemo(() => [
-  { title: 'Gym', data: exercises.filter(e => e.category === 'gym') },
-  { title: 'Cardio', data: exercises.filter(e => e.category === 'cardio') },
-  { title: 'Abs', data: exercises.filter(e => e.category === 'abs') },
-].filter(s => s.data.length > 0), [exercises]);
+### Project Structure Notes
 
-return (
-  <SectionList
-    sections={sections}
-    renderItem={({ item }) => <ExerciseItem exercise={item} />}
-    renderSectionHeader={({ section: { title } }) => (
-      <Text style={styles.header}>{title}</Text>
-    )}
-    keyExtractor={(item) => item.id.toString()}
-    ListEmptyComponent={<EmptyState />}
-  />
-);
-```
-
-### performance Guardrails
-- Use `React.memo` for `ExerciseItem`.
-- NFR11: Touch target min 44x44.
-- NFR12: Body text min 14pt.
+- Components following feature-based organization in `src/components/exercise/`.
 
 ### References
+
 - [Source: architecture.md#Component Architecture]
 - [Source: architecture.md#List Performance Pattern]
 - [Source: epics.md#Story 2.2]
@@ -84,4 +67,14 @@ gemini-2.0-pro-exp-02-05
 
 ### Completion Notes List
 
+- Exercise list UI implemented.
+- Category grouping and badging works.
+- Empty state handled.
+
 ### File List
+
+- `src/components/exercise/CategoryBadge.tsx`
+- `src/components/exercise/ExerciseItem.tsx`
+- `src/components/ui/EmptyState.tsx`
+- `src/components/ui/index.ts`
+- `src/screens/ExercisesScreen.tsx`
