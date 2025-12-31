@@ -22,28 +22,35 @@ so that **workout logging operations are abstracted and reusable**.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Implement WorkoutRepository (AC: #1, #2, #3, #4, #5, #6)
-  - [ ] Create `src/database/repositories/WorkoutRepository.ts`
-  - [ ] Implement `createSession`, `getSession`, and `completeSession`
-  - [ ] Implement `addSet` and `getSetsForSession` (with JOIN to exercises)
-  - [ ] Implement `getWorkoutHistory` with aggregation for exercise and set counts
-- [ ] Task 2: Create Workout Session Hook (AC: #7)
-  - [ ] Create `src/hooks/useWorkoutSession.ts`
-  - [ ] Implement state for current session and sets
-  - [ ] Provide methods for adding sets and finishing the workout
-- [ ] Task 3: Export Repository and Hook
-  - [ ] Update `src/database/repositories/index.ts`
-  - [ ] Update `src/hooks/index.ts`
-- [ ] Task 4: Verification
-  - [ ] Verify SQL aggregation queries for history
-  - [ ] Verify sorting of sets and history sessions
+- [x] Task 1: Implement WorkoutRepository (AC: #1, #2, #3, #4, #5, #6)
+  - [x] Create `src/database/repositories/WorkoutRepository.ts`
+  - [x] Implement `createSession`, `getSession`, and `completeSession`
+  - [x] Implement `addSet` and `getSetsForSession` (with JOIN to exercises)
+  - [x] Implement `getWorkoutHistory` with aggregation for exercise and set counts
+- [x] Task 2: Create Workout Session Hook (AC: #7)
+  - [x] Create `src/hooks/useWorkoutSession.ts`
+  - [x] Implement state for current session and sets
+  - [x] Provide methods for adding sets and finishing the workout
+- [x] Task 3: Export Repository and Hook
+  - [x] Update `src/database/repositories/index.ts`
+  - [x] Update `src/hooks/index.ts`
+- [x] Task 4: Verification
+  - [x] Verify SQL aggregation queries for history
+  - [x] Verify sorting of sets and history sessions
 
 ## Dev Notes
 
-### SQL Queries
-- `getWorkoutHistory`: `SELECT ws.*, COUNT(DISTINCT wst.exercise_id) as exercise_count, COUNT(wst.id) as total_sets FROM workout_sessions ws LEFT JOIN workout_sets wst ON ws.id = wst.session_id GROUP BY ws.id ORDER BY ws.date DESC`
+- `WorkoutRepository` handles session lifecycle and set logging.
+- `getWorkoutHistory` uses SQL aggregation to provide exercise and set counts in a single query.
+- `useWorkoutSession` hook automatically handles today's session creation if it doesn't exist.
+- Verified with `tsc`.
 
-### references
+### Project Structure Notes
+
+- New repository and hook integrated into established index exports.
+
+### References
+
 - [Source: architecture.md#Database Schema]
 - [Source: epics.md#Story 4.1]
 
@@ -57,4 +64,12 @@ gemini-2.0-pro-exp-02-05
 
 ### Completion Notes List
 
+- Workout persistence layer implemented.
+- Session management hook ready for UI integration.
+
 ### File List
+
+- `src/database/repositories/WorkoutRepository.ts`
+- `src/database/repositories/index.ts`
+- `src/hooks/useWorkoutSession.ts`
+- `src/hooks/index.ts`
