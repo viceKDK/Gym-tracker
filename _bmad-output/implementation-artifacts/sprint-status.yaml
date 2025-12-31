@@ -49,7 +49,7 @@ development_status:
   epic-1-retrospective: optional
 
   epic-2: in-progress
-  2-1-create-exerciserepository-with-crud-operations: ready-for-dev
+  2-1-create-exerciserepository-with-crud-operations: review
   2-2-display-exercise-list-by-category: ready-for-dev
   2-3-create-new-exercise: ready-for-dev
   2-4-edit-and-delete-exercise: ready-for-dev
