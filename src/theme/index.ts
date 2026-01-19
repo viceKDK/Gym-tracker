@@ -5,32 +5,32 @@
 
 export const colors = {
   // Primary palette
-  primary: '#FF6B6B',      // Coral - Main actions, active states
-  secondary: '#4ECDC4',    // Teal - Secondary actions, accents
+  primary: '#2563EB',      // Blue - Main actions, active states
+  secondary: '#3B82F6',    // Light Blue - Secondary actions, accents
 
   // Backgrounds
-  background: '#FFF9F0',   // Cream - App background
+  background: '#F8FAFC',   // Light Gray - App background
   surface: '#FFFFFF',      // White - Cards, modals
 
   // Text
-  text: '#2D3436',         // Dark Gray - Primary text
-  textSecondary: '#636E72', // Medium Gray - Secondary text
+  text: '#1E293B',         // Slate - Primary text
+  textSecondary: '#64748B', // Medium Slate - Secondary text
   textInverse: '#FFFFFF',  // White - Text on dark backgrounds
 
   // UI elements
-  border: '#DFE6E9',       // Light Gray - Dividers, borders
+  border: '#E2E8F0',       // Light Slate - Dividers, borders
 
   // Feedback
-  error: '#E74C3C',        // Red - Error states
-  success: '#27AE60',      // Green - Success states
+  error: '#EF4444',        // Red - Error states
+  success: '#10B981',      // Green - Success states
 
   // Activity graph levels (0 = no activity, 4 = high activity)
   activityLevels: [
-    '#EBEDF0', // Level 0 - Neutral gray (no workout)
-    '#FFE5E5', // Level 1 - Lightest coral
-    '#FFB3B3', // Level 2
-    '#FF8080', // Level 3
-    '#FF6B6B', // Level 4 - Full coral (high activity)
+    '#F1F5F9', // Level 0 - Neutral gray (no workout)
+    '#DBEAFE', // Level 1 - Lightest blue
+    '#93C5FD', // Level 2
+    '#60A5FA', // Level 3
+    '#2563EB', // Level 4 - Full blue (high activity)
   ] as const,
 } as const;
 

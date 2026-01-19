@@ -11,3 +11,4 @@ export { default as WorkoutHistoryScreen } from './WorkoutHistoryScreen';
 export { default as WorkoutDetailScreen } from './WorkoutDetailScreen';
 export { default as ProgressChartScreen } from './ProgressChartScreen';
 export { default as StatisticsScreen } from './StatisticsScreen';
+export { default as SettingsScreen } from './SettingsScreen';

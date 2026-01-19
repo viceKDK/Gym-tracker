@@ -2,20 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, AppProvider, useTheme } from './src/contexts';
+import { ThemeProvider, AppProvider, LanguageProvider, useTheme, useLanguage } from './src/contexts';
 import { initializeDatabase } from './src/database';
 import AppNavigator from './src/navigation/AppNavigator';
 
 function AppContent() {
   const [isReady, setIsReady] = useState(false);
   const theme = useTheme();
+  const { language } = useLanguage();
 
   useEffect(() => {
     async function prepare() {
       try {
         // Initialize SQLite Database with Schema (Story 1.3)
-        initializeDatabase();
-        
+        // Use current language for default exercises
+        initializeDatabase(language);
+
         // Artificial delay to show loading state (optional, can be removed)
         // await new Promise(resolve => setTimeout(resolve, 500));
       } catch (e) {
@@ -26,7 +28,7 @@ function AppContent() {
     }
 
     prepare();
-  }, []);
+  }, [language]);
 
   if (!isReady) {
     return (
@@ -46,11 +48,13 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppProvider>
-        <AppContent />
-      </AppProvider>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <AppProvider>
+          <AppContent />
+        </AppProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 

@@ -4,6 +4,8 @@
  */
 
 import * as SQLite from 'expo-sqlite';
+import { getDefaultExercises } from './defaultExercises';
+import { Language } from '../i18n/translations';
 
 const DATABASE_NAME = 'gym-traker.db';
 
@@ -78,11 +80,45 @@ const CREATE_INDEXES = `
 `;
 
 /**
+ * Seed the database with default exercises if it's empty
+ */
+function seedDefaultExercises(language: Language = 'es'): void {
+  const database = getDatabase();
+
+  try {
+    // Check if exercises table is empty
+    const result = database.getFirstSync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM exercises'
+    );
+
+    if (result && result.count === 0) {
+      console.log('[Database] Seeding default exercises...');
+
+      const defaultExercises = getDefaultExercises(language);
+
+      // Insert default exercises
+      const stmt = database.prepareSync(
+        'INSERT INTO exercises (name, category) VALUES (?, ?)'
+      );
+
+      for (const exercise of defaultExercises) {
+        stmt.executeSync([exercise.name, exercise.category]);
+      }
+
+      console.log(`[Database] Seeded ${defaultExercises.length} default exercises`);
+    }
+  } catch (error) {
+    console.error('[Database] Failed to seed exercises:', error);
+    throw error;
+  }
+}
+
+/**
  * Initialize the database schema
  * Creates all tables and indexes if they don't exist
  * Safe to call multiple times (idempotent)
  */
-export function initializeDatabase(): void {
+export function initializeDatabase(language: Language = 'es'): void {
   const database = getDatabase();
 
   try {
@@ -96,6 +132,9 @@ export function initializeDatabase(): void {
     database.execSync(CREATE_INDEXES);
 
     console.log('[Database] Schema initialized successfully');
+
+    // Seed default exercises
+    seedDefaultExercises(language);
   } catch (error) {
     console.error('[Database] Failed to initialize schema:', error);
     throw error;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { 
-  HomeScreen, 
-  WorkoutScreen, 
-  RoutineScreen, 
-  ExercisesScreen, 
+import {
+  HomeScreen,
+  WorkoutScreen,
+  RoutineScreen,
+  ExercisesScreen,
   ProgressScreen,
   ExerciseFormScreen,
   DayConfigScreen,
@@ -13,7 +13,8 @@ import {
   WorkoutHistoryScreen,
   WorkoutDetailScreen,
   ProgressChartScreen,
-  StatisticsScreen
+  StatisticsScreen,
+  SettingsScreen
 } from '../screens';
 
 const HomeStack = createNativeStackNavigator();
@@ -25,7 +26,8 @@ const ProgressStack = createNativeStackNavigator();
 export function HomeStackNavigator() {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name="HomeIndex" component={HomeScreen} options={{ title: 'Home' }} />
+      <HomeStack.Screen name="HomeIndex" component={HomeScreen} options={{ headerShown: false }} />
+      <HomeStack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
     </HomeStack.Navigator>
   );
 }

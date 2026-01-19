@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, ScrollView, View, Text, SafeAreaView } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { TodayWorkoutPreview } from '../components/routine/TodayWorkoutPreview';
 import { ActivityGraph } from '../components/activity/ActivityGraph';
 import { StreakCounter } from '../components/activity/StreakCounter';
@@ -12,6 +14,7 @@ import { addDays, subDays } from 'date-fns';
 
 export default function HomeScreen() {
   const { colors, typography, spacing } = useTheme();
+  const { t } = useLanguage();
   const { exercises } = useTodayRoutine();
   const { data: activityData, endDate, setEndDate, refresh: refreshActivity } = useActivityData();
   const { streak, refresh: refreshStreak } = useStreak();
@@ -43,25 +46,41 @@ export default function HomeScreen() {
     navigation.navigate('Workout');
   };
 
+  const handleSettings = () => {
+    navigation.navigate('Settings');
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={{ paddingVertical: spacing.md }}>
-        <View style={{ paddingHorizontal: spacing.md, marginBottom: spacing.md }}>
-          <Text style={[typography.h2, { color: colors.text }]}>Welcome back!</Text>
-          <Text style={[typography.body, { color: colors.textSecondary }]}>Ready for your training?</Text>
+      {/* Header */}
+      <View style={[styles.header, { paddingHorizontal: spacing.md, paddingVertical: spacing.sm }]}>
+        <Text style={[typography.h2, { color: colors.text }]}>{t.screens.home}</Text>
+        <TouchableOpacity onPress={handleSettings} style={styles.settingsButton}>
+          <MaterialIcons name="settings" size={24} color={colors.text} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: spacing.lg }}>
+        {/* Streak Counter */}
+        <View style={{ marginTop: spacing.sm }}>
+          <StreakCounter count={streak} />
         </View>
 
-        <StreakCounter count={streak} />
+        {/* Today's Workout Preview */}
+        <View style={{ marginTop: spacing.md }}>
+          <TodayWorkoutPreview
+            exercises={exercises}
+            onPress={handleStartWorkout}
+          />
+        </View>
 
-        <TodayWorkoutPreview 
-          exercises={exercises} 
-          onPress={handleStartWorkout} 
-        />
-
+        {/* Activity Graph */}
         <View style={styles.activitySection}>
-          <Text style={[typography.h3, { color: colors.text, marginLeft: spacing.md, marginBottom: spacing.sm }]}>Activity</Text>
-          <ActivityGraph 
-            data={activityData} 
+          <Text style={[typography.h3, { color: colors.text, marginLeft: spacing.md, marginBottom: spacing.sm }]}>
+            {t.home.activityGraph}
+          </Text>
+          <ActivityGraph
+            data={activityData}
             endDate={endDate}
             onPrev={handlePrevPeriod}
             onNext={handleNextPeriod}
@@ -77,7 +96,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  settingsButton: {
+    padding: 8,
+  },
   activitySection: {
-    marginTop: 16,
+    marginTop: 24,
   },
 });

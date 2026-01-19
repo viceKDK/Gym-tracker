@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   HomeStackNavigator,
   WorkoutStackNavigator,
@@ -14,6 +15,7 @@ const Tab = createBottomTabNavigator();
 
 export function AppNavigator() {
   const { colors } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tab.Navigator
@@ -41,11 +43,11 @@ export function AppNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeStackNavigator} />
-      <Tab.Screen name="Workout" component={WorkoutStackNavigator} />
-      <Tab.Screen name="Routine" component={RoutineStackNavigator} />
-      <Tab.Screen name="Exercises" component={ExerciseStackNavigator} />
-      <Tab.Screen name="Progress" component={ProgressStackNavigator} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: t.screens.home }} />
+      <Tab.Screen name="Workout" component={WorkoutStackNavigator} options={{ title: t.screens.workout }} />
+      <Tab.Screen name="Routine" component={RoutineStackNavigator} options={{ title: t.screens.routine }} />
+      <Tab.Screen name="Exercises" component={ExerciseStackNavigator} options={{ title: t.screens.exercises }} />
+      <Tab.Screen name="Progress" component={ProgressStackNavigator} options={{ title: t.screens.statistics }} />
     </Tab.Navigator>
   );
 }
