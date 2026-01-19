@@ -28,7 +28,27 @@ export interface Translations {
     gym: string;
     cardio: string;
     abs: string;
+    calisthenics: string;
     all: string;
+  };
+
+  // Muscle Groups
+  muscleGroups: {
+    chest: string;
+    back: string;
+    shoulders: string;
+    biceps: string;
+    triceps: string;
+    forearms: string;
+    abs: string;
+    obliques: string;
+    lowerBack: string;
+    quads: string;
+    hamstrings: string;
+    glutes: string;
+    calves: string;
+    fullBody: string;
+    cardio: string;
   };
 
   // Days of week
@@ -251,7 +271,25 @@ export const translations: Record<Language, Translations> = {
       gym: 'Gimnasio',
       cardio: 'Cardio',
       abs: 'Abdominales',
+      calisthenics: 'Calistenia',
       all: 'Todos',
+    },
+    muscleGroups: {
+      chest: 'Pecho',
+      back: 'Espalda',
+      shoulders: 'Hombros',
+      biceps: 'Bíceps',
+      triceps: 'Tríceps',
+      forearms: 'Antebrazos',
+      abs: 'Abdominales',
+      obliques: 'Oblicuos',
+      lowerBack: 'Espalda Baja',
+      quads: 'Cuádriceps',
+      hamstrings: 'Isquiotibiales',
+      glutes: 'Glúteos',
+      calves: 'Pantorrillas',
+      fullBody: 'Cuerpo Completo',
+      cardio: 'Cardio',
     },
     days: {
       monday: 'Lunes',
@@ -448,7 +486,25 @@ export const translations: Record<Language, Translations> = {
       gym: 'Gym',
       cardio: 'Cardio',
       abs: 'Abs',
+      calisthenics: 'Calisthenics',
       all: 'All',
+    },
+    muscleGroups: {
+      chest: 'Chest',
+      back: 'Back',
+      shoulders: 'Shoulders',
+      biceps: 'Biceps',
+      triceps: 'Triceps',
+      forearms: 'Forearms',
+      abs: 'Abs',
+      obliques: 'Obliques',
+      lowerBack: 'Lower Back',
+      quads: 'Quads',
+      hamstrings: 'Hamstrings',
+      glutes: 'Glutes',
+      calves: 'Calves',
+      fullBody: 'Full Body',
+      cardio: 'Cardio',
     },
     days: {
       monday: 'Monday',

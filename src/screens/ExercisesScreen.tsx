@@ -1,36 +1,50 @@
 import React, { useMemo, useCallback, useState } from 'react';
-import { StyleSheet, SectionList, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, SectionList, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useExercises } from '../hooks/useExercises';
 import { ExerciseItem } from '../components/exercise/ExerciseItem';
 import { SearchBar } from '../components/exercise/SearchBar';
 import { CategoryFilter } from '../components/exercise/CategoryFilter';
 import { EmptyState } from '../components/ui';
-import { Exercise, ExerciseCategory } from '../types';
+import { Exercise, ExerciseCategory, MuscleGroup } from '../types';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+const MUSCLE_GROUPS: MuscleGroup[] = [
+  'chest', 'back', 'shoulders', 'biceps', 'triceps', 'forearms',
+  'abs', 'obliques', 'lowerBack', 'quads', 'hamstrings', 'glutes',
+  'calves', 'fullBody', 'cardio'
+];
+
 export default function ExercisesScreen() {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, borderRadius } = useTheme();
   const { exercises, loading, error, refresh } = useExercises();
   const navigation = useNavigation<any>();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ExerciseCategory | 'all'>('all');
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | 'all'>('all');
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(e => {
-      const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            (e.muscle_group && e.muscle_group.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || e.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      const matchesMuscle = selectedMuscleGroup === 'all' || e.muscle_group === selectedMuscleGroup;
+      
+      return matchesSearch && matchesCategory && matchesMuscle;
     });
-  }, [exercises, searchQuery, selectedCategory]);
+  }, [exercises, searchQuery, selectedCategory, selectedMuscleGroup]);
 
-  const sections = useMemo(() => [
-    { title: 'Gym', data: filteredExercises.filter(e => e.category === 'gym') },
-    { title: 'Cardio', data: filteredExercises.filter(e => e.category === 'cardio') },
-    { title: 'Abs', data: filteredExercises.filter(e => e.category === 'abs') },
-  ].filter(s => s.data.length > 0), [filteredExercises]);
+  const sections = useMemo(() => {
+    const categories: ExerciseCategory[] = ['gym', 'cardio', 'abs', 'calisthenics'];
+    const result = categories.map(cat => ({
+      title: cat.charAt(0).toUpperCase() + cat.slice(1),
+      data: filteredExercises.filter(e => e.category === cat)
+    })).filter(s => s.data.length > 0);
+    
+    return result;
+  }, [filteredExercises]);
 
   const handleAddPress = useCallback(() => {
     navigation.navigate('ExerciseForm');
@@ -39,13 +53,20 @@ export default function ExercisesScreen() {
   const handleExercisePress = useCallback((exercise: Exercise) => {
     navigation.navigate('ExerciseForm', { 
       exerciseId: exercise.id,
-      initialData: { name: exercise.name, category: exercise.category }
+      initialData: { 
+        name: exercise.name, 
+        category: exercise.category,
+        muscle_group: exercise.muscle_group,
+        image_url: exercise.image_url,
+        video_url: exercise.video_url
+      }
     });
   }, [navigation]);
 
   const handleReset = useCallback(() => {
     setSearchQuery('');
     setSelectedCategory('all');
+    setSelectedMuscleGroup('all');
   }, []);
 
   React.useLayoutEffect(() => {
@@ -73,10 +94,49 @@ export default function ExercisesScreen() {
         onChangeText={setSearchQuery} 
         onClear={() => setSearchQuery('')} 
       />
-      <CategoryFilter 
-        selectedCategory={selectedCategory} 
-        onSelect={setSelectedCategory} 
-      />
+      <View>
+        <CategoryFilter 
+          selectedCategory={selectedCategory} 
+          onSelect={setSelectedCategory} 
+        />
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.muscleFilterContainer}
+        >
+          <TouchableOpacity
+            style={[
+              styles.muscleChip, 
+              { 
+                backgroundColor: selectedMuscleGroup === 'all' ? colors.primary : colors.surface,
+                borderColor: selectedMuscleGroup === 'all' ? colors.primary : colors.border,
+                borderRadius: borderRadius.full
+              }
+            ]}
+            onPress={() => setSelectedMuscleGroup('all')}
+          >
+            <Text style={[typography.small, { color: selectedMuscleGroup === 'all' ? colors.textInverse : colors.textSecondary }]}>All</Text>
+          </TouchableOpacity>
+          {MUSCLE_GROUPS.map(mg => (
+            <TouchableOpacity
+              key={mg}
+              style={[
+                styles.muscleChip, 
+                { 
+                  backgroundColor: selectedMuscleGroup === mg ? colors.primary : colors.surface,
+                  borderColor: selectedMuscleGroup === mg ? colors.primary : colors.border,
+                  borderRadius: borderRadius.full
+                }
+              ]}
+              onPress={() => setSelectedMuscleGroup(mg)}
+            >
+              <Text style={[typography.small, { color: selectedMuscleGroup === mg ? colors.textInverse : colors.textSecondary }]}>
+                {mg.charAt(0).toUpperCase() + mg.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
       
       <SectionList
         sections={sections}
@@ -131,5 +191,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  muscleFilterContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  muscleChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    marginRight: 8,
   },
 });

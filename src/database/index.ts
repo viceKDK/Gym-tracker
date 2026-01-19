@@ -31,7 +31,10 @@ const CREATE_EXERCISES_TABLE = `
   CREATE TABLE IF NOT EXISTS exercises (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    category TEXT NOT NULL CHECK (category IN ('gym', 'cardio', 'abs')),
+    category TEXT NOT NULL,
+    muscle_group TEXT,
+    image_url TEXT,
+    video_url TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
 `;
@@ -80,32 +83,71 @@ const CREATE_INDEXES = `
 `;
 
 /**
- * Seed the database with default exercises if it's empty
+ * Migrate existing database to add new columns
+ */
+function migrateDatabase(): void {
+  const database = getDatabase();
+
+  try {
+    // Check if muscle_group column exists
+    const columns = database.getAllSync<{ name: string }>(
+      "PRAGMA table_info(exercises)"
+    );
+
+    const hasMuscleGroup = columns.some(col => col.name === 'muscle_group');
+    const hasImageUrl = columns.some(col => col.name === 'image_url');
+    const hasVideoUrl = columns.some(col => col.name === 'video_url');
+
+    if (!hasMuscleGroup) {
+      console.log('[Database] Adding muscle_group column...');
+      database.execSync('ALTER TABLE exercises ADD COLUMN muscle_group TEXT');
+    }
+
+    if (!hasImageUrl) {
+      console.log('[Database] Adding image_url column...');
+      database.execSync('ALTER TABLE exercises ADD COLUMN image_url TEXT');
+    }
+
+    if (!hasVideoUrl) {
+      console.log('[Database] Adding video_url column...');
+      database.execSync('ALTER TABLE exercises ADD COLUMN video_url TEXT');
+    }
+
+    console.log('[Database] Migration completed');
+  } catch (error) {
+    console.error('[Database] Migration failed:', error);
+    throw error;
+  }
+}
+
+/**
+ * Seed the database with default exercises if they don't exist
  */
 function seedDefaultExercises(language: Language = 'es'): void {
   const database = getDatabase();
 
   try {
-    // Check if exercises table is empty
-    const result = database.getFirstSync<{ count: number }>(
-      'SELECT COUNT(*) as count FROM exercises'
+    console.log('[Database] Checking for missing default exercises...');
+    const defaultExercises = getDefaultExercises(language);
+    
+    // Get existing exercise names to avoid duplicates
+    const existing = database.getAllSync<{ name: string }>('SELECT name FROM exercises');
+    const existingNames = new Set(existing.map(e => e.name.toLowerCase()));
+
+    let addedCount = 0;
+    const stmt = database.prepareSync(
+      'INSERT INTO exercises (name, category, muscle_group) VALUES (?, ?, ?)'
     );
 
-    if (result && result.count === 0) {
-      console.log('[Database] Seeding default exercises...');
-
-      const defaultExercises = getDefaultExercises(language);
-
-      // Insert default exercises
-      const stmt = database.prepareSync(
-        'INSERT INTO exercises (name, category) VALUES (?, ?)'
-      );
-
-      for (const exercise of defaultExercises) {
-        stmt.executeSync([exercise.name, exercise.category]);
+    for (const exercise of defaultExercises) {
+      if (!existingNames.has(exercise.name.toLowerCase())) {
+        stmt.executeSync([exercise.name, exercise.category, exercise.muscleGroup || null]);
+        addedCount++;
       }
+    }
 
-      console.log(`[Database] Seeded ${defaultExercises.length} default exercises`);
+    if (addedCount > 0) {
+      console.log(`[Database] Seeded ${addedCount} new default exercises`);
     }
   } catch (error) {
     console.error('[Database] Failed to seed exercises:', error);
@@ -132,6 +174,9 @@ export function initializeDatabase(language: Language = 'es'): void {
     database.execSync(CREATE_INDEXES);
 
     console.log('[Database] Schema initialized successfully');
+
+    // Run migrations for existing databases
+    migrateDatabase();
 
     // Seed default exercises
     seedDefaultExercises(language);

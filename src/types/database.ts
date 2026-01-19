@@ -3,7 +3,25 @@
  */
 
 // Exercise categories
-export type ExerciseCategory = 'gym' | 'cardio' | 'abs';
+export type ExerciseCategory = 'gym' | 'cardio' | 'abs' | 'calisthenics';
+
+// Muscle groups
+export type MuscleGroup =
+  | 'chest'
+  | 'back'
+  | 'shoulders'
+  | 'biceps'
+  | 'triceps'
+  | 'forearms'
+  | 'abs'
+  | 'obliques'
+  | 'lowerBack'
+  | 'quads'
+  | 'hamstrings'
+  | 'glutes'
+  | 'calves'
+  | 'fullBody'
+  | 'cardio';
 
 // Day of week (0 = Sunday, 6 = Saturday)
 export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -15,6 +33,9 @@ export interface Exercise {
   id: number;
   name: string;
   category: ExerciseCategory;
+  muscle_group: MuscleGroup | null;
+  image_url: string | null;
+  video_url: string | null;
   created_at: string;
 }
 
@@ -24,6 +45,9 @@ export interface Exercise {
 export interface NewExercise {
   name: string;
   category: ExerciseCategory;
+  muscle_group?: MuscleGroup | null;
+  image_url?: string | null;
+  video_url?: string | null;
 }
 
 /**
@@ -42,6 +66,7 @@ export interface RoutineDay {
 export interface RoutineDayWithExercise extends RoutineDay {
   exercise_name: string;
   exercise_category: ExerciseCategory;
+  exercise_muscle_group: MuscleGroup | null;
 }
 
 /**
@@ -90,6 +115,7 @@ export interface WorkoutSet {
 export interface WorkoutSetWithExercise extends WorkoutSet {
   exercise_name: string;
   exercise_category: ExerciseCategory;
+  exercise_muscle_group: MuscleGroup | null;
 }
 
 /**
